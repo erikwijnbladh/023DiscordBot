@@ -47,6 +47,11 @@ const handleCommands = async (message) => {
   if (args[0] === "!rajco") {
     message.channel.send("wand when?");
   }
+
+  // Command for help
+  if (args[0] === "!023") {
+    message.channel.send("!worldrank | !serverrank | !rajco");
+  }
 };
 
 module.exports = handleCommands;
