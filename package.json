@@ -1,8 +1,5 @@
 {
   "name": "023discordbot",
-  "engines": {
-    "node": ">=20.10.0"
-  },
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
