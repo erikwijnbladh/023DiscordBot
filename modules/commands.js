@@ -1,57 +1,58 @@
-// commands.js
-const {
-  fetchWorldRanks,
-  fetchServerRanks,
-} = require("./functions/fetchRankingsPerBoss");
-const { displaySpeedruns } = require("./functions/fetchSpeedrun");
+const { fetchSpeedKills } = require("./functions/fetchSpeedKills");
+const { fetchSpeedRuns } = require("./functions/fetchSpeedruns");
 
 const config = require("./config");
 const { serverSlug, serverRegion } = config;
 
-// Function to format rankings into a table-like structure
-const formatRankings = (title, rankings) => {
+const formatSpeedTable = (columnLabel, rankings) => {
   const tableHeader = `\`\`\`
-${title}:
-
-| Boss                     | Rank       |
-|--------------------------|------------|
+| ${columnLabel.padEnd(24)} | World | Region | Server |
+|--------------------------|-------|--------|--------|
 `;
 
   const tableFooter = `\n\`\`\``;
-  return tableHeader + rankings.join("\n") + tableFooter;
+  const rows = rankings.map(
+    (rank) =>
+      `| ${rank.encounter.padEnd(24)} | ${rank.worldRank
+        .toString()
+        .padStart(5)} | ${rank.regionRank
+        .toString()
+        .padStart(6)} | ${rank.serverRank.toString().padStart(6)} |`
+  );
+
+  return tableHeader + rows.join("\n") + tableFooter;
 };
 
-// Command handler function
+// Handle commands sent in Discord
 const handleCommands = async (message) => {
-  if (message.author.bot) return; // Ignore bot messages
+  if (message.author.bot) return;
 
   const args = message.content.split(" ");
 
-  // Command for world rankings
-  if (args[0] === "!worldrank") {
-    const rankings = await fetchWorldRanks();
-    message.channel.send(
-      formatRankings("World Speed Rankings for NollTvåTre", rankings)
-    );
-  }
-
-  // Command for server rankings
-  if (args[0] === "!serverrank") {
-    const serverRankings = await fetchServerRanks(serverRegion, serverSlug);
-    message.channel.send(
-      formatRankings(`Golemagg Speed Rankings for NollTvåTre`, serverRankings)
-    );
-  }
-
-  // Command for speedrun rankings that fetches World, Region, and Server rankings
+  // Speedrun command
   if (args[0] === "!speedrun") {
     try {
-      const speedrunRanks = await displaySpeedruns();
-      message.channel.send(speedrunRanks);
+      const speedrunRanks = await fetchSpeedRuns(serverRegion, serverSlug);
+      message.channel.send(`Speedrun Rankings for **NollTvåTre**`);
+      message.channel.send(formatSpeedTable("Raid", speedrunRanks));
     } catch (error) {
       console.error("Error fetching speedrun rankings:", error.message);
       message.channel.send(
         "There was an error fetching the speedrun rankings. Please try again later."
+      );
+    }
+  }
+
+  // Speedkills command
+  if (args[0] === "!speedkills") {
+    try {
+      const speedKillsRanks = await fetchSpeedKills(serverRegion, serverSlug);
+      message.channel.send(`Speed Kill Rankings for **NollTvåTre**`);
+      message.channel.send(formatSpeedTable("Boss", speedKillsRanks));
+    } catch (error) {
+      console.error("Error fetching speedkill rankings:", error.message);
+      message.channel.send(
+        "There was an error fetching the speedkill rankings. Please try again later."
       );
     }
   }
@@ -63,7 +64,7 @@ const handleCommands = async (message) => {
 
   // Command for help
   if (args[0] === "!023") {
-    message.channel.send("!worldrank | !serverrank | !speedrun | !rajco");
+    message.channel.send("!speedkills | !speedrun | !rajco");
   }
 };
 
