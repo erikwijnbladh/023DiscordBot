@@ -97,7 +97,7 @@ const handleCommands = async (message) => {
 
   // Command for help
   if (args[0] === "!023") {
-    message.channel.send("!speedkills | !speedrun | !rajco | !wandprice");
+    message.channel.send("!speedkills | !speedrun | !rajco | !wand");
   }
 };
 
