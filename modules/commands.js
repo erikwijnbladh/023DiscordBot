@@ -1,9 +1,12 @@
 // commands.js
-const { fetchWorldRanks, fetchServerRanks } = require("./fetchRankings");
+const {
+  fetchWorldRanks,
+  fetchServerRanks,
+} = require("./functions/fetchRankingsPerBoss");
+const { displaySpeedruns } = require("./functions/fetchSpeedrun");
 
-const serverSlug = "golemagg"; // Your server slug
-const serverName = "Golemagg"; // Your server slug
-const serverRegion = "eu"; // Your server region
+const config = require("./config");
+const { serverSlug, serverRegion } = config;
 
 // Function to format rankings into a table-like structure
 const formatRankings = (title, rankings) => {
@@ -36,11 +39,21 @@ const handleCommands = async (message) => {
   if (args[0] === "!serverrank") {
     const serverRankings = await fetchServerRanks(serverRegion, serverSlug);
     message.channel.send(
-      formatRankings(
-        `${serverName} Speed Rankings for NollTvåTre`,
-        serverRankings
-      )
+      formatRankings(`Golemagg Speed Rankings for NollTvåTre`, serverRankings)
     );
+  }
+
+  // Command for speedrun rankings that fetches World, Region, and Server rankings
+  if (args[0] === "!speedrun") {
+    try {
+      const speedrunRanks = await displaySpeedruns();
+      message.channel.send(speedrunRanks);
+    } catch (error) {
+      console.error("Error fetching speedrun rankings:", error.message);
+      message.channel.send(
+        "There was an error fetching the speedrun rankings. Please try again later."
+      );
+    }
   }
 
   // Command for meme
@@ -50,7 +63,7 @@ const handleCommands = async (message) => {
 
   // Command for help
   if (args[0] === "!023") {
-    message.channel.send("!worldrank | !serverrank | !rajco");
+    message.channel.send("!worldrank | !serverrank | !speedrun | !rajco");
   }
 };
 

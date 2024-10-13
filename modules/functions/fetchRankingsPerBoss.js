@@ -1,13 +1,12 @@
-// fetchRankings.js
+// fetchRankingsPerBoss.js
 const axios = require("axios");
-const encounters = require("./encounters");
+const config = require("../config");
 
-const accessToken = process.env.ACCESS_TOKEN;
-const size = 10; // 10-man raid size
-const guildId = 703640; // The guild ID of NollTvåTre
+const { accessToken, guildId, size, serverSlug, serverRegion, encounters } =
+  config;
 
 // Generic function to fetch rankings
-const fetchRankings = async (region, serverSlug) => {
+const fetchRankings = async (serverRegion, serverSlug) => {
   let results = [];
   for (const encounter of encounters) {
     let query = `
@@ -16,8 +15,8 @@ const fetchRankings = async (region, serverSlug) => {
         encounter(id: ${encounter.id}) {
           fightRankings(size: ${size}, metric: speed`;
 
-    if (region && serverSlug) {
-      query += `, serverRegion: "${region}", serverSlug: "${serverSlug}"`;
+    if (serverRegion && serverSlug) {
+      query += `, serverRegion: "${serverRegion}", serverSlug: "${serverSlug}"`;
     }
     query += `)
         }
