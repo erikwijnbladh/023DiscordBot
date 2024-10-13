@@ -23,7 +23,7 @@ const formatSpeedTable = (columnLabel, rankings) => {
   return tableHeader + rows.join("\n") + tableFooter;
 };
 
-// Handle commands sent in Discord
+// Command handler function
 const handleCommands = async (message) => {
   if (message.author.bot) return;
 
@@ -32,9 +32,14 @@ const handleCommands = async (message) => {
   // Speedrun command
   if (args[0] === "!speedrun") {
     try {
+      // Send "Loading..." message first
+      const loadingMessage = await message.channel.send("Loading Speedruns...");
+
       const speedrunRanks = await fetchSpeedRuns(serverRegion, serverSlug);
-      message.channel.send(`Speedrun Rankings for **NollTvåTre**`);
-      message.channel.send(formatSpeedTable("Raid", speedrunRanks));
+
+      // Edit the message once data is loaded
+      await loadingMessage.delete(`Speedrun Rankings for **NollTvåTre**`);
+      await message.channel.send(formatSpeedTable("Raid", speedrunRanks));
     } catch (error) {
       console.error("Error fetching speedrun rankings:", error.message);
       message.channel.send(
@@ -46,9 +51,16 @@ const handleCommands = async (message) => {
   // Speedkills command
   if (args[0] === "!speedkills") {
     try {
+      // Send "Loading..." message first
+      const loadingMessage = await message.channel.send(
+        "Loading Speedkills..."
+      );
+
       const speedKillsRanks = await fetchSpeedKills(serverRegion, serverSlug);
-      message.channel.send(`Speed Kill Rankings for **NollTvåTre**`);
-      message.channel.send(formatSpeedTable("Boss", speedKillsRanks));
+
+      // Edit the message once data is loaded
+      await loadingMessage.delete(`Speed Kill Rankings for **NollTvåTre**`);
+      await message.channel.send(formatSpeedTable("Boss", speedKillsRanks));
     } catch (error) {
       console.error("Error fetching speedkill rankings:", error.message);
       message.channel.send(
