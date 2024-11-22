@@ -7,14 +7,14 @@ const { serverSlug, serverRegion } = config;
 
 const formatSpeedTable = (columnLabel, rankings) => {
   const tableHeader = `\`\`\`
-| ${columnLabel.padEnd(24)} | World | Region | Server |
-|--------------------------|-------|--------|--------|
+| ${columnLabel.padEnd(18)} | World | Region | Server |
+|--------------------|-------|--------|--------|
 `;
 
   const tableFooter = `\n\`\`\``;
   const rows = rankings.map(
     (rank) =>
-      `| ${rank.encounter.padEnd(24)} | ${rank.worldRank
+      `| ${rank.encounter.padEnd(18)} | ${rank.worldRank
         .toString()
         .padStart(5)} | ${rank.regionRank
         .toString()
